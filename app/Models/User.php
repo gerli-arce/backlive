@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
-{
+class User extends Model{
+
     static $rules = [
-        'username'=> 'required|unique',
+        
+        'relative_id'=> 'required',
+        'username' => 'required|unique',
         'password' => 'required',
         'auth_token' => '',
-        'name' => 'required',
         'lastname' => 'required',
+        'name' => 'required',
         'email' => 'nullable|email|min:0|max:320',
-        'phone_number' => '',
         'phone_prefix' => '',
+        'phone_number' => '',
         'status' => 'required'
     ];
     public $timestamps = false;
 
-    public function activity(){
-        return $this->hasMany(Activity::class, '_user', 'id');
+    public function role(){
+        return $this->hasOne(Role::class, 'id', '_role');
     }
-  
 }

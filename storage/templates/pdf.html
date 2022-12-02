@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .text {
+            text-align: center;
+        }
+
+        .container {
+            background-color: aqua;
+        }
+
+        .li li {
+            background-color: black;
+            color: #fff;
+            list-style: none;
+            padding: 12px;
+            text-align: center;
+        }
+    </style>
+
+    <div class="min-container">
+        <h1 class="text">{description}</h1>
+    </div>
+    <div class="li">
+        <li>Banana</li>
+        <li>palta</li>
+        <li>naranja</li>
+    </div>
+
+
+    <script>
+        await fetch('http://127.0.0.1:8000/api/PDF', {
+            method: "POST",
+        }).then(async (data) => {
+            blob = await data.blob();
+            console.log(blob);
+            var element = document.createElement('a');
+            element.setAttribute('href', await gImage.blobToBase64(blob));
+            element.setAttribute('download', 'Hola');
+            document.body.appendChild(element);
+            element.click();
+        }).catch((Error) => {
+
+        })
+    </script>
+
+</body>
+
+</html>
