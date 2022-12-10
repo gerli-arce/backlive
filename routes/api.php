@@ -55,7 +55,7 @@ Route::get('/users', [UserController::class, 'index']);
 // SESSION
 Route::post('/session/login', [SessionController::class, 'login']);
 // Route::post('/session/logout', [SessionController::class, 'logout']);
-// Route::post('/session/verify', [SessionController::class, 'verify']);
+Route::post('/session/verify', [SessionController::class, 'verify']);
 
 
 // // ROLE

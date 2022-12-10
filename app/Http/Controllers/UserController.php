@@ -199,22 +199,18 @@ class UserController extends Controller
 
       if (
         !isset($request->username) ||
-        !isset($request->password) ||
-        !isset($request->_role) ||
-        !isset($request->dni) ||
-        !isset($request->name) ||
-        !isset($request->lastname)
+        !isset($request->password) 
       ) {
         throw new Exception("Error: No deje campos vacíos");
       }
 
-      [$status, $message, $role] = gValidate::get($request);
-      if ($status != 200) {
-        throw new Exception($message);
-      }
-      if (!gvalidate::check($role->permissions, 'users', 'create')) {
-        throw new Exception('No tienes permisos para agregar usuarios en el sistema');
-      }
+      // [$status, $message, $role] = gValidate::get($request);
+      // if ($status != 200) {
+      //   throw new Exception($message);
+      // }
+      // if (!gvalidate::check($role->permissions, 'users', 'create')) {
+      //   throw new Exception('No tienes permisos para agregar usuarios en el sistema');
+      // }
 
       $userValidation = User::select(['users.username'])->where('username', $request->username)->first();
 
@@ -224,43 +220,40 @@ class UserController extends Controller
 
       $userJpa = new User();
 
-      if (
-        isset($request->image_type) &&
-        isset($request->image_mini) &&
-        isset($request->image_full)
-      ) {
-        if (
-          $request->image_type &&
-          $request->image_mini &&
-          $request->image_full
-        ) {
-          $userJpa->image_type = $request->image_type;
-          $userJpa->image_mini = base64_decode($request->image_mini);
-          $userJpa->image_full = base64_decode($request->image_full);
-        } else {
-          $userJpa->image_type = null;
-          $userJpa->image_mini = null;
-          $userJpa->image_full = null;
-        }
-      }
+      // if (
+      //   isset($request->image_type) &&
+      //   isset($request->image_mini) &&
+      //   isset($request->image_full)
+      // ) {
+      //   if (
+      //     $request->image_type &&
+      //     $request->image_mini &&
+      //     $request->image_full
+      //   ) {
+      //     $userJpa->image_type = $request->image_type;
+      //     $userJpa->image_mini = base64_decode($request->image_mini);
+      //     $userJpa->image_full = base64_decode($request->image_full);
+      //   } else {
+      //     $userJpa->image_type = null;
+      //     $userJpa->image_mini = null;
+      //     $userJpa->image_full = null;
+      //   }
+      // }
 
       $userJpa->relative_id = guid::short();
       $userJpa->username = $request->username;
       $userJpa->password = password_hash($request->password, PASSWORD_DEFAULT);
-      $userJpa->_role = $request->_role;
-      $userJpa->dni = $request->dni;
-      $userJpa->lastname = $request->lastname;
-      $userJpa->name = $request->name;
-      if (
-        isset($request->phone_prefix) &&
-        isset($request->phone_number)
-      ) {
-        $userJpa->phone_prefix = $request->phone_prefix;
-        $userJpa->phone_number = $request->phone_number;
-      }
-      if (isset($request->email)) {
-        $userJpa->email = $request->email;
-      }
+    
+      // if (
+      //   isset($request->phone_prefix) &&
+      //   isset($request->phone_number)
+      // ) {
+      //   $userJpa->phone_prefix = $request->phone_prefix;
+      //   $userJpa->phone_number = $request->phone_number;
+      // }
+      // if (isset($request->email)) {
+      //   $userJpa->email = $request->email;
+      // }
 
       $userJpa->save();
 

@@ -46,9 +46,7 @@ class SessionController extends Controller
             if (!$userJpa->status) {
                 throw new Exception('Este usuario se encuentra inactivo');
             }
-            // if (!password_verify($request->password, $userJpa->password)) {
-            //     throw new Exception('Error: Contraseña incorrecta');
-            // }
+            
 
             $userJpa->auth_token = guid::long();
             $userJpa->save();
@@ -124,31 +122,24 @@ class SessionController extends Controller
     {
         $response = new Response();
         try {
-            if (
-                $request->header('sode-auth-token') == null ||
-                $request->header('sode-auth-user') == null
-            ) {
-                throw new Exception('Debe enviar los parámetros necesarios');
-            }
+            // if (
+            //     $request->header('sode-auth-token') == null ||
+            //     $request->header('sode-auth-user') == null
+            // ) {
+            //     throw new Exception('Debe enviar los parámetros necesarios');
+            // }
 
             $userJpa = User::select([
                 'users.relative_id',
                 'users.username',
                 'users.auth_token',
-                'users.dni',
                 'users.lastname',
                 'users.name',
                 'users.email',
                 'users.phone_prefix',
                 'users.phone_number',
-                'roles.id AS role.id',
-                'roles.role AS role.role',
-                'roles.priority AS role.priority',
-                'roles.description AS role.description',
-                'roles.permissions AS role.permissions',
                 'users.status',
             ])
-                ->leftjoin('roles', 'users._role', '=', 'roles.id')
                 ->where('auth_token', $request->header('sode-auth-token'))
                 ->where('username', $request->header('sode-auth-user'))
                 ->first();
@@ -158,7 +149,6 @@ class SessionController extends Controller
             }
 
             $user = gJSON::restore($userJpa->toArray());
-            $user['role']['permissions'] = gJSON::parse($user['role']['permissions']);
 
             $response->setStatus(200);
             $response->setMessage('Operación correcta');
