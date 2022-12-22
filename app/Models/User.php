@@ -9,7 +9,7 @@ class User extends Model{
     static $rules = [
         
         'relative_id'=> 'required',
-        'username' => 'required|unique',
+        'username' => 'required',
         'password' => 'required',
         'auth_token' => '',
         'lastname' => 'required',

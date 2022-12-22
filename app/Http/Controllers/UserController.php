@@ -5,14 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Response;
 use App\gLibraries\guid;
+use App\gLibraries\gtrace;
 use App\gLibraries\gjson;
 use App\gLibraries\gvalidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-
-
 use Exception;
+
 
 class UserController extends Controller
 {
@@ -197,66 +196,42 @@ class UserController extends Controller
     $response = new Response();
     try {
 
-      if (
-        !isset($request->username) ||
-        !isset($request->password) 
-      ) {
-        throw new Exception("Error: No deje campos vacíos");
-      }
-
-      // [$status, $message, $role] = gValidate::get($request);
-      // if ($status != 200) {
-      //   throw new Exception($message);
-      // }
-      // if (!gvalidate::check($role->permissions, 'users', 'create')) {
-      //   throw new Exception('No tienes permisos para agregar usuarios en el sistema');
-      // }
-
       $userValidation = User::select(['users.username'])->where('username', $request->username)->first();
 
       if ($userValidation) {
-        throw new Exception("Este usuario ya existe");
+        throw new Exception("Error. Este usuario ya existe");
       }
 
       $userJpa = new User();
 
-      // if (
-      //   isset($request->image_type) &&
-      //   isset($request->image_mini) &&
-      //   isset($request->image_full)
-      // ) {
-      //   if (
-      //     $request->image_type &&
-      //     $request->image_mini &&
-      //     $request->image_full
-      //   ) {
-      //     $userJpa->image_type = $request->image_type;
-      //     $userJpa->image_mini = base64_decode($request->image_mini);
-      //     $userJpa->image_full = base64_decode($request->image_full);
-      //   } else {
-      //     $userJpa->image_type = null;
-      //     $userJpa->image_mini = null;
-      //     $userJpa->image_full = null;
-      //   }
-      // }
-
-      $userJpa->relative_id = guid::short();
       $userJpa->username = $request->username;
       $userJpa->password = password_hash($request->password, PASSWORD_DEFAULT);
-    
-      // if (
-      //   isset($request->phone_prefix) &&
-      //   isset($request->phone_number)
-      // ) {
-      //   $userJpa->phone_prefix = $request->phone_prefix;
-      //   $userJpa->phone_number = $request->phone_number;
-      // }
-      // if (isset($request->email)) {
-      //   $userJpa->email = $request->email;
-      // }
+      $userJpa->relative_id = guid::short();
+
+      if($request->name){
+        $userJpa->name = $request->name;
+      }
+
+      if($request->lastname){
+        $userJpa->lastname = $request->lastname;
+      }
+
+      if ($request->email) {
+        $userJpa->email = $request->email;
+      }
+
+      if (
+        isset($request->phone_prefix) &&
+        isset($request->phone_number)
+        ) {
+          $userJpa->phone_prefix = $request->phone_prefix;
+          $userJpa->phone_number = $request->phone_number;
+        }
+        
+      $userJpa->date_creation = gTrace::getDate('mysql');
+      $userJpa->status = "1";
 
       $userJpa->save();
-
       $response->setStatus(200);
       $response->setMessage('Usuario agregado correctamente');
     } catch (\Throwable $th) {

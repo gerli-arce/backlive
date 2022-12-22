@@ -36,12 +36,16 @@ class SessionController extends Controller
                 'users.phone_number',
                 'users.status',
             ])
-                ->where('username', $request->username)
-                ->where('password', $request->password)
+                ->where('username','=', $request->username)
                 ->first();
 
+            
             if (!$userJpa) {
                 throw new Exception('Error: Usuario no existe');
+            }
+
+            if(!password_verify($request->password, $userJpa->password)){
+                throw new Exception('Error: Contraseña incorrecta');
             }
             if (!$userJpa->status) {
                 throw new Exception('Este usuario se encuentra inactivo');
@@ -53,7 +57,7 @@ class SessionController extends Controller
 
             $user = gJSON::restore($userJpa->toArray());
             unset($user['id']);
-            unset($user['password']);
+            // unset($user['password']);
          
 
             $response->setStatus(200);
